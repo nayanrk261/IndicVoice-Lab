@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import healthRoutes from './routes/health.js';
 import transcriptionRoutes from './routes/transcription.js';
+import evaluationRoutes from './routes/evaluation.js';
 import { notFoundHandler, errorHandler } from './middleware/errorHandler.js';
 import { env } from './config/env.js';
 
@@ -22,6 +23,7 @@ app.get('/api/health', (req, res) => {
 
 app.use('/api/healthz', healthRoutes);
 app.use('/api/transcription', transcriptionRoutes);
+app.use('/api/evaluations', evaluationRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
