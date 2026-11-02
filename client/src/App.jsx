@@ -43,7 +43,41 @@ const howItWorks = [
 
 const formatPercentage = (value) => {
   const numericValue = Number(value ?? 0);
+  if (!Number.isFinite(numericValue)) {
+    return '0.00%';
+  }
+
   return `${(numericValue * 100).toFixed(2)}%`;
+};
+
+const formatFileSize = (bytes = 0) => {
+  if (!Number.isFinite(bytes) || bytes <= 0) {
+    return '0 KB';
+  }
+
+  const units = ['B', 'KB', 'MB', 'GB'];
+  let size = bytes;
+  let unitIndex = 0;
+
+  while (size >= 1024 && unitIndex < units.length - 1) {
+    size /= 1024;
+    unitIndex += 1;
+  }
+
+  return `${size.toFixed(size >= 10 || unitIndex === 0 ? 0 : 1)} ${units[unitIndex]}`;
+};
+
+const formatTimestamp = (value) => {
+  if (!value) {
+    return '—';
+  }
+
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) {
+    return value;
+  }
+
+  return parsed.toLocaleString();
 };
 
 export default function App() {
@@ -99,6 +133,24 @@ export default function App() {
       return;
     }
 
+    const allowedTypes = [
+      'audio/wav',
+      'audio/mpeg',
+      'audio/mp3',
+      'audio/mp4',
+      'audio/m4a',
+      'audio/flac',
+      'audio/ogg'
+    ];
+
+    const extension = incomingFile.name.split('.').pop()?.toLowerCase();
+    const isAllowedExtension = ['wav', 'mp3', 'm4a', 'flac', 'ogg'].includes(extension || '');
+
+    if (!isAllowedExtension && !allowedTypes.includes(incomingFile.type)) {
+      setError('Unsupported file type. Please upload WAV, MP3, M4A, FLAC or OGG audio.');
+      return;
+    }
+
     setAudioFile(incomingFile);
     setError('');
   };
@@ -108,6 +160,17 @@ export default function App() {
     setIsDragging(false);
     const file = event.dataTransfer.files?.[0];
     handleFileSelection(file);
+  };
+
+  const removeAudioFile = (event) => {
+    if (event) {
+      event.stopPropagation();
+    }
+
+    setAudioFile(null);
+    if (inputRef.current) {
+      inputRef.current.value = '';
+    }
   };
 
   const runAnotherEvaluation = () => {
@@ -136,6 +199,7 @@ export default function App() {
 
     try {
       setIsLoading(true);
+      setReport(null);
       setError('');
 
       const response = await fetch(getApiUrl('/api/evaluations'), {
@@ -312,11 +376,26 @@ export default function App() {
                   hidden
                   onChange={(event) => handleFileSelection(event.target.files?.[0] || null)}
                 />
-                <div className="dropzone-content">
-                  <span className="dropzone-icon">◌</span>
-                  <strong>{audioFile ? audioFile.name : 'Drop your audio here'}</strong>
-                  <small>WAV, MP3, M4A, FLAC, OGG</small>
-                </div>
+
+                {audioFile ? (
+                  <div className="selected-file-panel" onClick={(event) => event.stopPropagation()}>
+                    <div className="file-badge">Audio</div>
+                    <div className="file-meta">
+                      <strong>{audioFile.name}</strong>
+                      <span>{formatFileSize(audioFile.size)}</span>
+                    </div>
+                    <button type="button" className="file-remove-button" onClick={removeAudioFile}>
+                      Remove
+                    </button>
+                  </div>
+                ) : (
+                  <div className="dropzone-content">
+                    <span className="dropzone-icon">♪</span>
+                    <strong>Drop your audio here</strong>
+                    <span>or click to browse</span>
+                    <small>WAV, MP3, M4A, FLAC, OGG</small>
+                  </div>
+                )}
               </div>
 
               <div className="field-grid">
@@ -330,14 +409,15 @@ export default function App() {
                 </label>
               </div>
 
-              <label className="field-label">
+              <label className="field-label transcript-field">
                 <span>Reference transcript</span>
                 <textarea
-                  rows="6"
+                  rows="7"
                   value={expectedTranscript}
                   onChange={(event) => setExpectedTranscript(event.target.value)}
                   placeholder="Enter the expected transcript for the recording"
                 />
+                <small className="field-note">{expectedTranscript.trim().split(/\s+/).filter(Boolean).length} words · {expectedTranscript.length} characters</small>
               </label>
 
               <div className="entity-manager">
@@ -350,7 +430,7 @@ export default function App() {
                   {entities.map((entity, index) => (
                     <div key={entity.id} className="entity-row">
                       <label className="field-label small-field">
-                        <span>Name</span>
+                        <span>Entity name</span>
                         <input
                           value={entity.name}
                           onChange={(event) => updateEntity(entity.id, 'name', event.target.value)}
@@ -359,7 +439,7 @@ export default function App() {
                       </label>
 
                       <label className="field-label small-field">
-                        <span>Type</span>
+                        <span>Entity type</span>
                         <select
                           value={entity.type}
                           onChange={(event) => updateEntity(entity.id, 'type', event.target.value)}
@@ -374,7 +454,7 @@ export default function App() {
                       </label>
 
                       <label className="field-label small-field">
-                        <span>Expected</span>
+                        <span>Expected value</span>
                         <input
                           value={entity.expectedValue}
                           onChange={(event) => updateEntity(entity.id, 'expectedValue', event.target.value)}
@@ -383,7 +463,7 @@ export default function App() {
                       </label>
 
                       <label className="field-label small-field">
-                        <span>Predicted</span>
+                        <span>Predicted value</span>
                         <input
                           value={entity.predictedValue}
                           onChange={(event) => updateEntity(entity.id, 'predictedValue', event.target.value)}
@@ -406,19 +486,25 @@ export default function App() {
 
               {error && <div className="message-banner error-banner">{error}</div>}
 
-              <button type="submit" className="submit-button" disabled={isLoading}>
-                {isLoading ? 'Evaluating…' : 'Evaluate transcript'}
-              </button>
+              <div className="action-row">
+                <button type="submit" className="submit-button" disabled={isLoading}>
+                  {isLoading ? 'Evaluating…' : 'Evaluate transcript'}
+                </button>
+                {isLoading && <span className="inline-status">Processing audio…</span>}
+              </div>
             </form>
 
             <aside className="results-panel">
               {!report ? (
                 <div className="empty-state">
-                  <span>Awaiting evaluation</span>
-                  <p>Results will appear here after a run completes.</p>
+                  <div className="empty-card">
+                    <span className="section-kicker">Awaiting evaluation</span>
+                    <h3>Results will appear here</h3>
+                    <p>Once a test completes, this panel shows error rates, transcript checks, and entity outcomes.</p>
+                  </div>
                 </div>
               ) : (
-                <>
+                <div className="report-shell">
                   <div className="results-header">
                     <div>
                       <span className="section-kicker">Report</span>
@@ -427,18 +513,7 @@ export default function App() {
                     <span className={`status-badge ${report.status}`}>{report.status}</span>
                   </div>
 
-                  <div className="transcript-stack">
-                    <div className="comparison-box">
-                      <span>Expected</span>
-                      <p>{report.expectedTranscript || '—'}</p>
-                    </div>
-                    <div className="comparison-box">
-                      <span>Actual</span>
-                      <p>{report.actualTranscript || '—'}</p>
-                    </div>
-                  </div>
-
-                  <div className="metrics-grid">
+                  <div className="metric-grid">
                     <div className="metric-box">
                       <span>WER</span>
                       <strong>{formatPercentage(report.wordErrorRate)}</strong>
@@ -465,17 +540,50 @@ export default function App() {
                     </div>
                   </div>
 
+                  <div className="comparison-panel">
+                    <div className="comparison-box">
+                      <span>Expected transcript</span>
+                      <p>{report.expectedTranscript || '—'}</p>
+                    </div>
+                    <div className="comparison-box">
+                      <span>Actual transcript</span>
+                      <p>{report.actualTranscript || '—'}</p>
+                    </div>
+                  </div>
+
+                  <div className="report-note">
+                    Differences are evaluated using the backend’s supported WER/CER and entity checks. Token-level word alignment is not returned by the API, so this view presents the exact supported comparison data.
+                  </div>
+
                   {report.criticalEntities?.items?.length > 0 && (
                     <div className="entity-summary-box">
-                      <h4>Critical entity comparison</h4>
-                      <ul>
+                      <h4>Critical entity evaluation</h4>
+                      <div className="entity-results-list">
                         {report.criticalEntities.items.map((item) => (
-                          <li key={item.key}>
-                            <span>{item.key}</span>
-                            <strong>{item.match ? 'Match' : 'Mismatch'}</strong>
-                          </li>
+                          <div key={item.key} className={`entity-result ${item.match ? 'match' : 'mismatch'}`}>
+                            <div className="entity-result-header">
+                              <strong>{item.key}</strong>
+                              <span className={item.match ? 'entity-pass' : 'entity-fail'}>
+                                {item.match ? 'Match' : 'Mismatch'}
+                              </span>
+                            </div>
+                            <dl>
+                              <div>
+                                <dt>Type</dt>
+                                <dd>{item.entityType || '—'}</dd>
+                              </div>
+                              <div>
+                                <dt>Expected</dt>
+                                <dd>{item.expected || '—'}</dd>
+                              </div>
+                              <div>
+                                <dt>Predicted</dt>
+                                <dd>{item.predicted || '—'}</dd>
+                              </div>
+                            </dl>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   )}
 
@@ -485,11 +593,19 @@ export default function App() {
                       <strong>{report.processing?.language || '—'}</strong>
                     </div>
                     <div>
-                      <span>File</span>
+                      <span>Audio file</span>
                       <strong>{report.processing?.fileName || '—'}</strong>
                     </div>
+                    <div>
+                      <span>Status</span>
+                      <strong>{report.status || '—'}</strong>
+                    </div>
+                    <div>
+                      <span>Received</span>
+                      <strong>{formatTimestamp(report.processing?.receivedAt)}</strong>
+                    </div>
                   </div>
-                </>
+                </div>
               )}
             </aside>
           </div>
