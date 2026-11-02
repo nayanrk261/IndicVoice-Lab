@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useRef, useState } from 'react';
 import { getApiUrl } from './lib/api';
 
 const languageOptions = [
@@ -15,11 +15,44 @@ const createEntity = () => ({
   predictedValue: ''
 });
 
+const featureCards = [
+  {
+    title: 'Indian language evaluation',
+    description: 'Test Hindi, Marathi and Hinglish speech recognition against real, developer-defined reference transcripts.'
+  },
+  {
+    title: 'Word and character error rates',
+    description: 'Measure transcription quality across tokens and characters to catch subtle recognition drift.'
+  },
+  {
+    title: 'Critical entity evaluation',
+    description: 'Review manually supplied entity values to check if the model preserves names, numbers and locations.'
+  },
+  {
+    title: 'Reproducible testing',
+    description: 'Preserve a repeatable evaluation flow for regressions, model changes and multilingual coverage.'
+  }
+];
+
+const howItWorks = [
+  'Upload audio.',
+  'Compare against expected transcript.',
+  'Analyze recognition errors.',
+  'Inspect evaluation report.'
+];
+
+const formatPercentage = (value) => {
+  const numericValue = Number(value ?? 0);
+  return `${(numericValue * 100).toFixed(2)}%`;
+};
+
 export default function App() {
+  const inputRef = useRef(null);
   const [audioFile, setAudioFile] = useState(null);
   const [language, setLanguage] = useState('hi-IN');
-  const [expectedTranscript, setExpectedTranscript] = useState('नमस्ते दुनिया');
+  const [expectedTranscript, setExpectedTranscript] = useState('नमस्ते दुनिया, मैं अपनी रिपोर्ट तैयार कर रहा हूँ।');
   const [entities, setEntities] = useState([createEntity()]);
+  const [isDragging, setIsDragging] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const [report, setReport] = useState(null);
@@ -59,6 +92,22 @@ export default function App() {
 
       return current.filter((entity) => entity.id !== id);
     });
+  };
+
+  const handleFileSelection = (incomingFile) => {
+    if (!incomingFile) {
+      return;
+    }
+
+    setAudioFile(incomingFile);
+    setError('');
+  };
+
+  const handleDrop = (event) => {
+    event.preventDefault();
+    setIsDragging(false);
+    const file = event.dataTransfer.files?.[0];
+    handleFileSelection(file);
   };
 
   const runAnotherEvaluation = () => {
@@ -110,226 +159,342 @@ export default function App() {
   };
 
   return (
-    <main className="app-shell">
-      <section className="panel layout-grid">
-        <div className="panel-header">
-          <div>
-            <p className="eyebrow">IndicVoice Lab</p>
-            <h1>Speech evaluation workspace</h1>
-          </div>
-          {report && (
-            <button type="button" className="secondary-button" onClick={runAnotherEvaluation}>
-              Run another evaluation
-            </button>
-          )}
+    <div className="page-shell">
+      <header className="site-header">
+        <div className="brand-group">
+          <div className="brand-mark">IV</div>
+          <span>IndicVoice Lab</span>
         </div>
 
-        <form className="form-grid" onSubmit={handleSubmit}>
-          <div className="field-group">
-            <label htmlFor="audio">Audio file</label>
-            <input
-              id="audio"
-              type="file"
-              accept=".wav,.mp3,.m4a,.flac,.ogg,audio/wav,audio/mpeg,audio/mp4,audio/flac,audio/ogg"
-              onChange={(event) => setAudioFile(event.target.files?.[0] || null)}
-            />
-            <small>Supported by backend validation: WAV, MP3, M4A, FLAC, OGG</small>
+        <nav className="primary-nav" aria-label="Main navigation">
+          <a href="#features">Features</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#workspace">Workspace</a>
+        </nav>
+
+        <a href="#workspace" className="launch-button">
+          Launch Workspace
+        </a>
+      </header>
+
+      <main>
+        <section className="hero-section">
+          <div className="hero-copy">
+            <span className="kicker">INDIAN LANGUAGE VOICE AI TESTING</span>
+            <h1>Does your voice AI actually understand India?</h1>
+            <p>
+              Evaluate speech recognition quality across Hindi, Marathi and Hinglish with transparent test runs,
+              word and character error metrics, and critical entity checks built for real-world voice products.
+            </p>
+            <div className="hero-actions">
+              <a href="#workspace" className="primary-action">Start testing</a>
+              <a href="#features" className="secondary-action">Explore features</a>
+            </div>
+            <div className="hero-meta">
+              <span>Hindi</span>
+              <span>Marathi</span>
+              <span>Hinglish</span>
+            </div>
           </div>
 
-          <div className="field-group">
-            <label htmlFor="language">Language</label>
-            <select id="language" value={language} onChange={(event) => setLanguage(event.target.value)}>
-              {languageOptions.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+          <div className="hero-visual" aria-label="IndicVoice Lab product preview">
+            <div className="preview-shell">
+              <div className="preview-header">
+                <span>Evaluation preview</span>
+                <span className="demo-tag">Illustrative demo data</span>
+              </div>
+
+              <div className="preview-body">
+                <div className="preview-row">
+                  <div className="preview-label">Expected</div>
+                  <div className="preview-label">Actual</div>
+                </div>
+
+                <div className="preview-text-row">
+                  <p>नमस्ते टीम, कृपया मेरे पते की पुष्टि करें।</p>
+                  <p>नमस्ते टीम, कृपया मेरे पता की पुष्टि करें।</p>
+                </div>
+
+                <div className="mini-metrics">
+                  <div>
+                    <span>WER</span>
+                    <strong>12.50%</strong>
+                  </div>
+                  <div>
+                    <span>CER</span>
+                    <strong>6.40%</strong>
+                  </div>
+                  <div>
+                    <span>Entities</span>
+                    <strong>2/3</strong>
+                  </div>
+                </div>
+
+                <div className="entity-badges">
+                  <span className="pass-badge">Location match</span>
+                  <span className="warning-badge">Name mismatch</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="features" className="features-section">
+          <div className="section-heading">
+            <span className="section-kicker">Platform</span>
+            <h2>Built for multilingual voice quality testing.</h2>
           </div>
 
-          <div className="field-group full-width">
-            <label htmlFor="expectedTranscript">Expected/reference transcript</label>
-            <textarea
-              id="expectedTranscript"
-              rows="5"
-              value={expectedTranscript}
-              onChange={(event) => setExpectedTranscript(event.target.value)}
-              placeholder="Enter the expected transcript for this audio sample"
-            />
+          <div className="feature-grid">
+            {featureCards.map((feature) => (
+              <article key={feature.title} className="feature-card">
+                <div className="feature-icon">•</div>
+                <h3>{feature.title}</h3>
+                <p>{feature.description}</p>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="how-it-works" className="steps-section">
+          <div className="section-heading narrow-heading">
+            <span className="section-kicker">How it works</span>
+            <h2>Simple, repeatable evaluation flow.</h2>
           </div>
 
-          <div className="entity-panel full-width">
-            <div className="entity-header">
-              <h2>Critical entities</h2>
-              <button type="button" className="secondary-button" onClick={addEntity}>
-                Add entity
+          <div className="steps-grid">
+            {howItWorks.map((step, index) => (
+              <div key={step} className="step-card">
+                <span className="step-index">0{index + 1}</span>
+                <p>{step}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section id="workspace" className="workspace-section">
+          <div className="workspace-header">
+            <div>
+              <span className="section-kicker">Workspace</span>
+              <h2>Evaluation console</h2>
+            </div>
+            {report && (
+              <button type="button" className="secondary-action compact" onClick={runAnotherEvaluation}>
+                Run another evaluation
               </button>
-            </div>
-
-            <div className="entity-list">
-              {entities.map((entity, index) => (
-                <div key={entity.id} className="entity-row">
-                  <div className="field-group compact">
-                    <label>Entity name</label>
-                    <input
-                      value={entity.name}
-                      onChange={(event) => updateEntity(entity.id, 'name', event.target.value)}
-                      placeholder={`Entity ${index + 1}`}
-                    />
-                  </div>
-
-                  <div className="field-group compact">
-                    <label>Type</label>
-                    <select
-                      value={entity.type}
-                      onChange={(event) => updateEntity(entity.id, 'type', event.target.value)}
-                    >
-                      <option value="name">Name</option>
-                      <option value="location">Location</option>
-                      <option value="date">Date</option>
-                      <option value="number">Number</option>
-                      <option value="amount">Amount</option>
-                      <option value="other">Other</option>
-                    </select>
-                  </div>
-
-                  <div className="field-group compact">
-                    <label>Expected value</label>
-                    <input
-                      value={entity.expectedValue}
-                      onChange={(event) => updateEntity(entity.id, 'expectedValue', event.target.value)}
-                      placeholder="Expected"
-                    />
-                  </div>
-
-                  <div className="field-group compact">
-                    <label>Predicted value</label>
-                    <input
-                      value={entity.predictedValue}
-                      onChange={(event) => updateEntity(entity.id, 'predictedValue', event.target.value)}
-                      placeholder="Manual prediction"
-                    />
-                  </div>
-
-                  <button
-                    type="button"
-                    className="remove-button"
-                    onClick={() => removeEntity(entity.id)}
-                    aria-label={`Remove entity ${index + 1}`}
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-            </div>
+            )}
           </div>
 
-          {error && <div className="message error-message">{error}</div>}
-
-          <div className="submit-row full-width">
-            <button type="submit" className="primary-button" disabled={isLoading}>
-              {isLoading ? 'Evaluating…' : 'Evaluate transcript'}
-            </button>
-            <span className="helper-text">Manual entity predictions are supplied by the user for now.</span>
-          </div>
-        </form>
-
-        {report && (
-          <section className="report-panel full-width">
-            <div className="report-header">
-              <div>
-                <p className="eyebrow">Evaluation report</p>
-                <h2>Result summary</h2>
-              </div>
-              <span className={`status-pill ${report.status}`}>{report.status}</span>
-            </div>
-
-            <div className="transcript-grid">
-              <div className="transcript-block">
-                <h3>Expected transcript</h3>
-                <p>{report.expectedTranscript || '—'}</p>
-              </div>
-              <div className="transcript-block">
-                <h3>Actual transcript</h3>
-                <p>{report.actualTranscript || '—'}</p>
-              </div>
-            </div>
-
-            <div className="metrics-grid">
-              <div className="metric-card">
-                <span>WER</span>
-                <strong>{`${(Number(report.wordErrorRate || 0) * 100).toFixed(2)}%`}</strong>
-                <small>Lower is better</small>
-              </div>
-              <div className="metric-card">
-                <span>CER</span>
-                <strong>{`${(Number(report.characterErrorRate || 0) * 100).toFixed(2)}%`}</strong>
-                <small>Lower is better</small>
-              </div>
-              <div className="metric-card">
-                <span>Substitutions</span>
-                <strong>{report.substitutions ?? 0}</strong>
-              </div>
-              <div className="metric-card">
-                <span>Deletions</span>
-                <strong>{report.deletions ?? 0}</strong>
-              </div>
-              <div className="metric-card">
-                <span>Insertions</span>
-                <strong>{report.insertions ?? 0}</strong>
-              </div>
-              <div className="metric-card">
-                <span>Entity matches</span>
-                <strong>{report.criticalEntities?.matches ?? 0}</strong>
-              </div>
-              <div className="metric-card">
-                <span>Entity mismatches</span>
-                <strong>{report.criticalEntities?.mismatches ?? 0}</strong>
-              </div>
-            </div>
-
-            {report.criticalEntities?.items?.length > 0 && (
-              <div className="entity-summary">
-                <h3>Critical entity comparison</h3>
-                <div className="entity-table-wrapper">
-                  <table>
-                    <thead>
-                      <tr>
-                        <th>Key</th>
-                        <th>Expected</th>
-                        <th>Actual</th>
-                        <th>Status</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {report.criticalEntities.items.map((item) => (
-                        <tr key={item.key} className={item.match ? 'match' : 'mismatch'}>
-                          <td>{item.key}</td>
-                          <td>{item.expected || '—'}</td>
-                          <td>{item.actual || '—'}</td>
-                          <td>{item.match ? 'Match' : 'Mismatch'}</td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
+          <div className="workspace-grid">
+            <form className="evaluation-form" onSubmit={handleSubmit}>
+              <div
+                className={['dropzone', isDragging ? 'dragging' : ''].join(' ')}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  setIsDragging(true);
+                }}
+                onDragLeave={() => setIsDragging(false)}
+                onDrop={handleDrop}
+                onClick={() => inputRef.current?.click()}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault();
+                    inputRef.current?.click();
+                  }
+                }}
+              >
+                <input
+                  ref={inputRef}
+                  type="file"
+                  accept=".wav,.mp3,.m4a,.flac,.ogg,audio/wav,audio/mpeg,audio/mp4,audio/flac,audio/ogg"
+                  hidden
+                  onChange={(event) => handleFileSelection(event.target.files?.[0] || null)}
+                />
+                <div className="dropzone-content">
+                  <span className="dropzone-icon">◌</span>
+                  <strong>{audioFile ? audioFile.name : 'Drop your audio here'}</strong>
+                  <small>WAV, MP3, M4A, FLAC, OGG</small>
                 </div>
               </div>
-            )}
 
-            {report.processing && (
-              <div className="metadata-block">
-                <h3>Processing metadata</h3>
-                <ul>
-                  <li><span>Language:</span> {report.processing.language}</li>
-                  <li><span>File:</span> {report.processing.fileName}</li>
-                  <li><span>Mime type:</span> {report.processing.mimeType}</li>
-                  <li><span>Timestamp:</span> {new Date(report.processing.receivedAt).toLocaleString()}</li>
-                </ul>
+              <div className="field-grid">
+                <label className="field-label">
+                  <span>Language</span>
+                  <select value={language} onChange={(event) => setLanguage(event.target.value)}>
+                    {languageOptions.map((option) => (
+                      <option key={option.value} value={option.value}>{option.label}</option>
+                    ))}
+                  </select>
+                </label>
               </div>
-            )}
-          </section>
-        )}
-      </section>
-    </main>
+
+              <label className="field-label">
+                <span>Reference transcript</span>
+                <textarea
+                  rows="6"
+                  value={expectedTranscript}
+                  onChange={(event) => setExpectedTranscript(event.target.value)}
+                  placeholder="Enter the expected transcript for the recording"
+                />
+              </label>
+
+              <div className="entity-manager">
+                <div className="entity-manager-header">
+                  <h3>Critical entities</h3>
+                  <button type="button" className="ghost-button" onClick={addEntity}>Add entity</button>
+                </div>
+
+                <div className="entity-list">
+                  {entities.map((entity, index) => (
+                    <div key={entity.id} className="entity-row">
+                      <label className="field-label small-field">
+                        <span>Name</span>
+                        <input
+                          value={entity.name}
+                          onChange={(event) => updateEntity(entity.id, 'name', event.target.value)}
+                          placeholder={`Entity ${index + 1}`}
+                        />
+                      </label>
+
+                      <label className="field-label small-field">
+                        <span>Type</span>
+                        <select
+                          value={entity.type}
+                          onChange={(event) => updateEntity(entity.id, 'type', event.target.value)}
+                        >
+                          <option value="name">Name</option>
+                          <option value="location">Location</option>
+                          <option value="date">Date</option>
+                          <option value="number">Number</option>
+                          <option value="amount">Amount</option>
+                          <option value="other">Other</option>
+                        </select>
+                      </label>
+
+                      <label className="field-label small-field">
+                        <span>Expected</span>
+                        <input
+                          value={entity.expectedValue}
+                          onChange={(event) => updateEntity(entity.id, 'expectedValue', event.target.value)}
+                          placeholder="Expected value"
+                        />
+                      </label>
+
+                      <label className="field-label small-field">
+                        <span>Predicted</span>
+                        <input
+                          value={entity.predictedValue}
+                          onChange={(event) => updateEntity(entity.id, 'predictedValue', event.target.value)}
+                          placeholder="Manual prediction"
+                        />
+                      </label>
+
+                      <button
+                        type="button"
+                        className="remove-button"
+                        onClick={() => removeEntity(entity.id)}
+                        aria-label={`Remove entity ${index + 1}`}
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {error && <div className="message-banner error-banner">{error}</div>}
+
+              <button type="submit" className="submit-button" disabled={isLoading}>
+                {isLoading ? 'Evaluating…' : 'Evaluate transcript'}
+              </button>
+            </form>
+
+            <aside className="results-panel">
+              {!report ? (
+                <div className="empty-state">
+                  <span>Awaiting evaluation</span>
+                  <p>Results will appear here after a run completes.</p>
+                </div>
+              ) : (
+                <>
+                  <div className="results-header">
+                    <div>
+                      <span className="section-kicker">Report</span>
+                      <h3>Evaluation summary</h3>
+                    </div>
+                    <span className={`status-badge ${report.status}`}>{report.status}</span>
+                  </div>
+
+                  <div className="transcript-stack">
+                    <div className="comparison-box">
+                      <span>Expected</span>
+                      <p>{report.expectedTranscript || '—'}</p>
+                    </div>
+                    <div className="comparison-box">
+                      <span>Actual</span>
+                      <p>{report.actualTranscript || '—'}</p>
+                    </div>
+                  </div>
+
+                  <div className="metrics-grid">
+                    <div className="metric-box">
+                      <span>WER</span>
+                      <strong>{formatPercentage(report.wordErrorRate)}</strong>
+                    </div>
+                    <div className="metric-box">
+                      <span>CER</span>
+                      <strong>{formatPercentage(report.characterErrorRate)}</strong>
+                    </div>
+                    <div className="metric-box">
+                      <span>Substitutions</span>
+                      <strong>{report.substitutions ?? 0}</strong>
+                    </div>
+                    <div className="metric-box">
+                      <span>Deletions</span>
+                      <strong>{report.deletions ?? 0}</strong>
+                    </div>
+                    <div className="metric-box">
+                      <span>Insertions</span>
+                      <strong>{report.insertions ?? 0}</strong>
+                    </div>
+                    <div className="metric-box">
+                      <span>Entity matches</span>
+                      <strong>{report.criticalEntities?.matches ?? 0}</strong>
+                    </div>
+                  </div>
+
+                  {report.criticalEntities?.items?.length > 0 && (
+                    <div className="entity-summary-box">
+                      <h4>Critical entity comparison</h4>
+                      <ul>
+                        {report.criticalEntities.items.map((item) => (
+                          <li key={item.key}>
+                            <span>{item.key}</span>
+                            <strong>{item.match ? 'Match' : 'Mismatch'}</strong>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  <div className="metadata-box">
+                    <div>
+                      <span>Language</span>
+                      <strong>{report.processing?.language || '—'}</strong>
+                    </div>
+                    <div>
+                      <span>File</span>
+                      <strong>{report.processing?.fileName || '—'}</strong>
+                    </div>
+                  </div>
+                </>
+              )}
+            </aside>
+          </div>
+        </section>
+      </main>
+    </div>
   );
 }
