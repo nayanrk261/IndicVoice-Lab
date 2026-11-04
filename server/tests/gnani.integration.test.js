@@ -54,6 +54,71 @@ test('Gnani transcription service uses native FormData and parses the transcript
   }
 });
 
+test('Gnani transcription service forwards each supported language selection to the API request', async () => {
+  const originalFetch = global.fetch;
+  const originalApiKeyId = env.gnani.apiKeyId;
+  const fixturePath = path.resolve(process.cwd(), 'tests/fixtures/sample-audio.wav');
+
+  env.gnani.apiKeyId = 'test-key-id';
+
+  for (const selectedLanguage of ['hi-IN', 'mr-IN', 'en-IN']) {
+    const fetchMock = async (url, options) => {
+      const formEntries = [];
+      for (const [key, value] of options.body.entries()) {
+        formEntries.push({ key, value });
+      }
+
+      assert.ok(formEntries.some((entry) => entry.key === 'language_code' && entry.value === selectedLanguage));
+      assert.ok(formEntries.some((entry) => entry.key === 'preferred_language' && entry.value === selectedLanguage));
+
+      return {
+        ok: true,
+        status: 200,
+        async text() {
+          return JSON.stringify({ success: true, transcript: 'ok' });
+        }
+      };
+    };
+
+    global.fetch = fetchMock;
+    await transcribeAudioFromFile(fixturePath, {
+      originalName: 'sample-audio.wav',
+      contentType: 'audio/wav',
+      languageCode: selectedLanguage,
+      preferredLanguage: selectedLanguage
+    });
+  }
+
+  global.fetch = originalFetch;
+  env.gnani.apiKeyId = originalApiKeyId;
+});
+
+test('Gnani transcription service rejects unsupported language selections', async () => {
+  const originalFetch = global.fetch;
+  const originalApiKeyId = env.gnani.apiKeyId;
+  const fixturePath = path.resolve(process.cwd(), 'tests/fixtures/sample-audio.wav');
+
+  env.gnani.apiKeyId = 'test-key-id';
+  global.fetch = async () => {
+    throw new Error('fetch should not be called for an unsupported language');
+  };
+
+  try {
+    await assert.rejects(
+      () => transcribeAudioFromFile(fixturePath, {
+        originalName: 'sample-audio.wav',
+        contentType: 'audio/wav',
+        languageCode: 'fr-FR',
+        preferredLanguage: 'fr-FR'
+      }),
+      /unsupported gnani language/i
+    );
+  } finally {
+    global.fetch = originalFetch;
+    env.gnani.apiKeyId = originalApiKeyId;
+  }
+});
+
 test('Gnani transcription service throws when the API responds with a non-success payload', async () => {
   const originalFetch = global.fetch;
   const originalApiKeyId = env.gnani.apiKeyId;

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 
 import { evaluateTranscript } from '../lib/evaluationEngine.js';
-import { transcribeAudioFromFile } from '../services/gnaniService.js';
+import { transcribeAudioFromFile, validateGnaniLanguageSelection } from '../services/gnaniService.js';
 import { env } from '../config/env.js';
 import { upload, cleanupUploadedFile } from '../utils/audioUpload.js';
 
@@ -74,14 +74,16 @@ router.post('/', upload.single('audio'), async (req, res, next) => {
     }
 
     const language = typeof req.body.language === 'string' && req.body.language.trim()
-      ? req.body.language.trim()
+      ? validateGnaniLanguageSelection(req.body.language, env.gnani.languageCode)
       : env.gnani.languageCode;
 
     const expectedEntities = parseExpectedEntities(req.body.expectedEntities);
 
     const actualTranscript = await transcribeAudioFromFile(file.path, {
       originalName: file.originalname,
-      contentType: file.mimetype
+      contentType: file.mimetype,
+      languageCode: language,
+      preferredLanguage: language
     });
 
     if (!actualTranscript || !String(actualTranscript).trim()) {

@@ -73,6 +73,73 @@ test('successful complete evaluation returns a structured report', async () => {
   }
 });
 
+test('selected UI language is forwarded to the Gnani request for each supported account language', async () => {
+  const originalFetch = global.fetch;
+  const server = await startServer();
+  const port = server.address().port;
+
+  for (const selectedLanguage of ['hi-IN', 'mr-IN', 'en-IN']) {
+    global.fetch = routeFetchMock(originalFetch, {
+      ok: true,
+      status: 200,
+      body: { success: true, transcript: 'नमस्ते दुनिया' }
+    });
+
+    const form = buildAudioForm();
+    form.append('expectedTranscript', 'नमस्ते दुनिया');
+    form.append('language', selectedLanguage);
+    form.append('expectedEntities', JSON.stringify({ expected: {}, actual: {} }));
+
+    const response = await fetch(`http://127.0.0.1:${port}/api/evaluations`, {
+      method: 'POST',
+      body: form
+    });
+
+    const payload = await response.json();
+    assert.equal(response.status, 200);
+    assert.equal(payload.data.processing.language, selectedLanguage);
+  }
+
+  global.fetch = originalFetch;
+  await new Promise((resolve, reject) => {
+    server.close((error) => (error ? reject(error) : resolve()));
+  });
+});
+
+test('unsupported language values are rejected before contacting Gnani', async () => {
+  const originalFetch = global.fetch;
+  const server = await startServer();
+  const port = server.address().port;
+
+  global.fetch = routeFetchMock(originalFetch, {
+    ok: true,
+    status: 200,
+    body: { success: true, transcript: 'नमस्ते दुनिया' }
+  });
+
+  try {
+    const form = buildAudioForm();
+    form.append('expectedTranscript', 'नमस्ते दुनिया');
+    form.append('language', 'fr-FR');
+    form.append('expectedEntities', JSON.stringify({ expected: {}, actual: {} }));
+
+    const response = await fetch(`http://127.0.0.1:${port}/api/evaluations`, {
+      method: 'POST',
+      body: form
+    });
+
+    const payload = await response.json();
+    assert.equal(response.status, 400);
+    assert.equal(payload.success, false);
+    assert.match(payload.error.message, /unsupported gnani language/i);
+  } finally {
+    global.fetch = originalFetch;
+    await new Promise((resolve, reject) => {
+      server.close((error) => (error ? reject(error) : resolve()));
+    });
+  }
+});
+
 test('Gnani API failure returns a server error response', async () => {
   const originalFetch = global.fetch;
   const server = await startServer();

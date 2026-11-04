@@ -1,0 +1,128 @@
+{
+  "benchmarkName": "IndicVoice Lab sample benchmark",
+  "generatedAt": "2026-11-04T04:24:42.925Z",
+  "summary": {
+    "hi-IN": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "apiErrors": 0,
+      "skipped": 0
+    },
+    "mr-IN": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "apiErrors": 0,
+      "skipped": 0
+    },
+    "en-IN": {
+      "total": 1,
+      "passed": 0,
+      "failed": 1,
+      "apiErrors": 0,
+      "skipped": 0
+    }
+  },
+  "cases": [
+    {
+      "id": "sample-hi-01",
+      "language": "hi-IN",
+      "audioFile": "audio/sample-hi-01.wav",
+      "notes": "Placeholder Hindi recording. Add a real WAV file and verified transcript before running a live benchmark.",
+      "expectedTranscript": "",
+      "actualTranscript": "",
+      "wordErrorRate": null,
+      "characterErrorRate": null,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "criticalEntities": {
+        "total": 0,
+        "matches": 0,
+        "mismatches": 0,
+        "items": []
+      },
+      "apiSuccess": false,
+      "apiError": {
+        "message": "Audio file not found: audio/sample-hi-01.wav",
+        "type": "validation"
+      },
+      "model": null,
+      "locale": {
+        "languageCode": "hi-IN",
+        "preferredLanguage": "hi-IN",
+        "format": "transcribe",
+        "itnNativeNumerals": true
+      },
+      "processingMetadata": null,
+      "status": "failed"
+    },
+    {
+      "id": "sample-mr-01",
+      "language": "mr-IN",
+      "audioFile": "audio/sample-mr-01.wav",
+      "notes": "Placeholder Marathi recording. Add a real WAV file and verified transcript before running a live benchmark.",
+      "expectedTranscript": "",
+      "actualTranscript": "",
+      "wordErrorRate": null,
+      "characterErrorRate": null,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "criticalEntities": {
+        "total": 0,
+        "matches": 0,
+        "mismatches": 0,
+        "items": []
+      },
+      "apiSuccess": false,
+      "apiError": {
+        "message": "Audio file not found: audio/sample-mr-01.wav",
+        "type": "validation"
+      },
+      "model": null,
+      "locale": {
+        "languageCode": "mr-IN",
+        "preferredLanguage": "mr-IN",
+        "format": "transcribe",
+        "itnNativeNumerals": true
+      },
+      "processingMetadata": null,
+      "status": "failed"
+    },
+    {
+      "id": "sample-en-01",
+      "language": "en-IN",
+      "audioFile": "audio/sample-en-01.wav",
+      "notes": "Placeholder Indian-English recording. Add a real WAV file and verified transcript before running a live benchmark.",
+      "expectedTranscript": "",
+      "actualTranscript": "",
+      "wordErrorRate": null,
+      "characterErrorRate": null,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "criticalEntities": {
+        "total": 0,
+        "matches": 0,
+        "mismatches": 0,
+        "items": []
+      },
+      "apiSuccess": false,
+      "apiError": {
+        "message": "Audio file not found: audio/sample-en-01.wav",
+        "type": "validation"
+      },
+      "model": null,
+      "locale": {
+        "languageCode": "en-IN",
+        "preferredLanguage": "en-IN",
+        "format": "transcribe",
+        "itnNativeNumerals": true
+      },
+      "processingMetadata": null,
+      "status": "failed"
+    }
+  ]
+}

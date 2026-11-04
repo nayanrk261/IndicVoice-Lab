@@ -1,0 +1,109 @@
+{
+  "benchmarkName": "IndicVoice Lab initial benchmark dataset",
+  "description": "Initial six-case dataset scaffold. All cases are placeholders and will be skipped until real audio and transcripts are provided.",
+  "defaultLanguage": "hi-IN",
+  "cases": [
+    {
+      "id": "HI-01",
+      "language": "hi-IN",
+      "category": "Hindi conversation",
+      "audioFile": "audio/HI-01.mpeg",
+      "referenceTranscriptFile": "ground-truth/HI-01.txt",
+      "languageConfig": {
+        "languageCode": "hi-IN",
+        "preferredLanguage": "hi-IN"
+      },
+      "placeholder": true,
+      "expectedEntities": {
+        "expected": {},
+        "actual": {}
+      },
+      "notes": "Placeholder case for Hindi conversation. Add real audio and verified transcript, then set placeholder to false."
+    },
+    {
+      "id": "HI-02",
+      "language": "hi-IN",
+      "category": "Hindi numbers and dates",
+      "audioFile": "audio/HI-02.mpeg",
+      "referenceTranscriptFile": "ground-truth/HI-02.txt",
+      "languageConfig": {
+        "languageCode": "hi-IN",
+        "preferredLanguage": "hi-IN"
+      },
+      "placeholder": true,
+      "expectedEntities": {
+        "expected": {},
+        "actual": {}
+      },
+      "notes": "Placeholder case for Hindi numbers and dates. Add real audio and verified transcript, then set placeholder to false."
+    },
+    {
+      "id": "MR-01",
+      "language": "mr-IN",
+      "category": "Marathi conversation",
+      "audioFile": "audio/MR-01.mpeg",
+      "referenceTranscriptFile": "ground-truth/MR-01.txt",
+      "languageConfig": {
+        "languageCode": "mr-IN",
+        "preferredLanguage": "mr-IN"
+      },
+      "placeholder": true,
+      "expectedEntities": {
+        "expected": {},
+        "actual": {}
+      },
+      "notes": "Placeholder case for Marathi conversation. Add real audio and verified transcript, then set placeholder to false."
+    },
+    {
+      "id": "MR-02",
+      "language": "mr-IN",
+      "category": "Marathi names and locations",
+      "audioFile": "audio/MR-02.mpeg",
+      "referenceTranscriptFile": "ground-truth/MR-02.txt",
+      "languageConfig": {
+        "languageCode": "mr-IN",
+        "preferredLanguage": "mr-IN"
+      },
+      "placeholder": true,
+      "expectedEntities": {
+        "expected": {},
+        "actual": {}
+      },
+      "notes": "Placeholder case for Marathi names and locations. Add real audio and verified transcript, then set placeholder to false."
+    },
+    {
+      "id": "HX-01",
+      "language": "en-IN",
+      "category": "Hinglish conversational code-mixing",
+      "audioFile": "audio/HX-01.mpeg",
+      "referenceTranscriptFile": "ground-truth/HX-01.txt",
+      "languageConfig": {
+        "languageCode": "en-IN",
+        "preferredLanguage": "en-IN"
+      },
+      "placeholder": true,
+      "expectedEntities": {
+        "expected": {},
+        "actual": {}
+      },
+      "notes": "Placeholder case for Hinglish conversational code-mixing. Add real audio and verified transcript, then set placeholder to false."
+    },
+    {
+      "id": "HX-02",
+      "language": "en-IN",
+      "category": "Hinglish with English technical terminology",
+      "audioFile": "audio/HX-02.mpeg",
+      "referenceTranscriptFile": "ground-truth/HX-02.txt",
+      "languageConfig": {
+        "languageCode": "en-IN",
+        "preferredLanguage": "en-IN"
+      },
+      "placeholder": true,
+      "expectedEntities": {
+        "expected": {},
+        "actual": {}
+      },
+      "notes": "Placeholder case for Hinglish with technical terminology. Add real audio and verified transcript, then set placeholder to false."
+    }
+  ]
+}

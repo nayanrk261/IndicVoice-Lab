@@ -1,0 +1,245 @@
+{
+  "benchmarkName": "IndicVoice Lab initial benchmark dataset",
+  "generatedAt": "2026-11-04T04:40:19.453Z",
+  "summary": {
+    "hi-IN": {
+      "total": 2,
+      "passed": 0,
+      "failed": 0,
+      "apiErrors": 0,
+      "runtimeErrors": 0,
+      "validationErrors": 0,
+      "skipped": 2
+    },
+    "mr-IN": {
+      "total": 2,
+      "passed": 0,
+      "failed": 0,
+      "apiErrors": 0,
+      "runtimeErrors": 0,
+      "validationErrors": 0,
+      "skipped": 2
+    },
+    "en-IN": {
+      "total": 2,
+      "passed": 0,
+      "failed": 0,
+      "apiErrors": 0,
+      "runtimeErrors": 0,
+      "validationErrors": 0,
+      "skipped": 2
+    }
+  },
+  "cases": [
+    {
+      "id": "HI-01",
+      "language": "hi-IN",
+      "category": "Hindi conversation",
+      "audioFile": "audio/HI-01.wav",
+      "placeholder": true,
+      "notes": "Placeholder case for Hindi conversation. Add real audio and verified transcript, then set placeholder to false.",
+      "expectedTranscript": "",
+      "actualTranscript": "",
+      "wordErrorRate": null,
+      "characterErrorRate": null,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "criticalEntities": {
+        "total": 0,
+        "matches": 0,
+        "mismatches": 0,
+        "items": []
+      },
+      "apiSuccess": false,
+      "apiError": {
+        "message": "Placeholder benchmark case. Replace with real recording and transcript before live runs.",
+        "type": "validation"
+      },
+      "model": null,
+      "locale": {
+        "languageCode": "hi-IN",
+        "preferredLanguage": "hi-IN",
+        "format": "transcribe",
+        "itnNativeNumerals": true
+      },
+      "processingMetadata": null,
+      "status": "skipped"
+    },
+    {
+      "id": "HI-02",
+      "language": "hi-IN",
+      "category": "Hindi numbers and dates",
+      "audioFile": "audio/HI-02.wav",
+      "placeholder": true,
+      "notes": "Placeholder case for Hindi numbers and dates. Add real audio and verified transcript, then set placeholder to false.",
+      "expectedTranscript": "",
+      "actualTranscript": "",
+      "wordErrorRate": null,
+      "characterErrorRate": null,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "criticalEntities": {
+        "total": 0,
+        "matches": 0,
+        "mismatches": 0,
+        "items": []
+      },
+      "apiSuccess": false,
+      "apiError": {
+        "message": "Placeholder benchmark case. Replace with real recording and transcript before live runs.",
+        "type": "validation"
+      },
+      "model": null,
+      "locale": {
+        "languageCode": "hi-IN",
+        "preferredLanguage": "hi-IN",
+        "format": "transcribe",
+        "itnNativeNumerals": true
+      },
+      "processingMetadata": null,
+      "status": "skipped"
+    },
+    {
+      "id": "MR-01",
+      "language": "mr-IN",
+      "category": "Marathi conversation",
+      "audioFile": "audio/MR-01.wav",
+      "placeholder": true,
+      "notes": "Placeholder case for Marathi conversation. Add real audio and verified transcript, then set placeholder to false.",
+      "expectedTranscript": "",
+      "actualTranscript": "",
+      "wordErrorRate": null,
+      "characterErrorRate": null,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "criticalEntities": {
+        "total": 0,
+        "matches": 0,
+        "mismatches": 0,
+        "items": []
+      },
+      "apiSuccess": false,
+      "apiError": {
+        "message": "Placeholder benchmark case. Replace with real recording and transcript before live runs.",
+        "type": "validation"
+      },
+      "model": null,
+      "locale": {
+        "languageCode": "mr-IN",
+        "preferredLanguage": "mr-IN",
+        "format": "transcribe",
+        "itnNativeNumerals": true
+      },
+      "processingMetadata": null,
+      "status": "skipped"
+    },
+    {
+      "id": "MR-02",
+      "language": "mr-IN",
+      "category": "Marathi names and locations",
+      "audioFile": "audio/MR-02.wav",
+      "placeholder": true,
+      "notes": "Placeholder case for Marathi names and locations. Add real audio and verified transcript, then set placeholder to false.",
+      "expectedTranscript": "",
+      "actualTranscript": "",
+      "wordErrorRate": null,
+      "characterErrorRate": null,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "criticalEntities": {
+        "total": 0,
+        "matches": 0,
+        "mismatches": 0,
+        "items": []
+      },
+      "apiSuccess": false,
+      "apiError": {
+        "message": "Placeholder benchmark case. Replace with real recording and transcript before live runs.",
+        "type": "validation"
+      },
+      "model": null,
+      "locale": {
+        "languageCode": "mr-IN",
+        "preferredLanguage": "mr-IN",
+        "format": "transcribe",
+        "itnNativeNumerals": true
+      },
+      "processingMetadata": null,
+      "status": "skipped"
+    },
+    {
+      "id": "HX-01",
+      "language": "en-IN",
+      "category": "Hinglish conversational code-mixing",
+      "audioFile": "audio/HX-01.wav",
+      "placeholder": true,
+      "notes": "Placeholder case for Hinglish conversational code-mixing. Add real audio and verified transcript, then set placeholder to false.",
+      "expectedTranscript": "",
+      "actualTranscript": "",
+      "wordErrorRate": null,
+      "characterErrorRate": null,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "criticalEntities": {
+        "total": 0,
+        "matches": 0,
+        "mismatches": 0,
+        "items": []
+      },
+      "apiSuccess": false,
+      "apiError": {
+        "message": "Placeholder benchmark case. Replace with real recording and transcript before live runs.",
+        "type": "validation"
+      },
+      "model": null,
+      "locale": {
+        "languageCode": "en-IN",
+        "preferredLanguage": "en-IN",
+        "format": "transcribe",
+        "itnNativeNumerals": true
+      },
+      "processingMetadata": null,
+      "status": "skipped"
+    },
+    {
+      "id": "HX-02",
+      "language": "en-IN",
+      "category": "Hinglish with English technical terminology",
+      "audioFile": "audio/HX-02.wav",
+      "placeholder": true,
+      "notes": "Placeholder case for Hinglish with technical terminology. Add real audio and verified transcript, then set placeholder to false.",
+      "expectedTranscript": "",
+      "actualTranscript": "",
+      "wordErrorRate": null,
+      "characterErrorRate": null,
+      "substitutions": 0,
+      "deletions": 0,
+      "insertions": 0,
+      "criticalEntities": {
+        "total": 0,
+        "matches": 0,
+        "mismatches": 0,
+        "items": []
+      },
+      "apiSuccess": false,
+      "apiError": {
+        "message": "Placeholder benchmark case. Replace with real recording and transcript before live runs.",
+        "type": "validation"
+      },
+      "model": null,
+      "locale": {
+        "languageCode": "en-IN",
+        "preferredLanguage": "en-IN",
+        "format": "transcribe",
+        "itnNativeNumerals": true
+      },
+      "processingMetadata": null,
+      "status": "skipped"
+    }
+  ]
+}
